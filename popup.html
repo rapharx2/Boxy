@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boxy</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <img src="icons/icon48.png" alt="Boxy Logo" class="header-logo-img">
+      <span class="logo">Boxy</span>
+    </div>
+    <div class="header-right">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search...">
+      
+      <button class="settings-btn icon-btn" id="settingsBtn" title="Settings" aria-label="Settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-type="all">All</button>
+    <button class="tab-btn" data-type="text">Texts</button>
+    <button class="tab-btn" data-type="image">Images</button>
+    <button class="tab-btn" data-type="video">Videos</button>
+    <button class="tab-btn" data-type="article">Articles</button>
+    <button class="tab-btn" data-type="folders">Folders</button>
+  </nav>
+
+  <div class="main-container">
+    <main class="items-list" id="itemsList">
+      <div class="empty-state" id="emptyState">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-secondary); opacity: 0.5; margin-bottom: 16px;">
+          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+        </svg>
+        <p>Your boxy is empty!</p>
+      </div>
+    </main>
+  </div>
+
+  <button class="fab" id="fabBtn" title="Save from current tab">
+    <span class="fab-icon">+</span>
+  </button>
+
+  <div class="modal" id="saveModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="modalTitle">Save from Page</h2>
+        <button class="modal-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="itemType">Type</label>
+          <select id="itemType" class="form-control">
+            <option value="article">Article</option>
+            <option value="video">Video</option>
+            <option value="image">Image</option>
+            <option value="text">Text</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="itemFolder">Folder</label>
+          <select id="itemFolder" class="form-control">
+            <option value="All Items">All Items</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="itemName">Name</label>
+          <input type="text" id="itemName" class="form-control" placeholder="Enter name...">
+        </div>
+
+        <div class="form-group">
+          <label for="itemNote">Note <span class="char-count" id="charCount">0/500</span></label>
+          <textarea id="itemNote" class="form-control" maxlength="500" rows="3" placeholder="Add a note..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="alarmToggle">
+            <span class="icon-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              <span>Set Alarm</span>
+            </span>
+          </label>
+          <input type="datetime-local" id="alarmPicker" class="form-control" style="display: none;">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" id="modalCancel">Cancel</button>
+        <button class="btn-primary" id="modalSave">SAVE</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="editModalTitle">Edit Item</h2>
+        <button class="modal-close" id="editModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <div id="editPreview" style="text-align: center; margin-bottom: 16px;"></div>
+        </div>
+
+        <div class="form-group">
+          <label for="editFolder">Folder</label>
+          <select id="editFolder" class="form-control">
+            <option value="All Items">All Items</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="editNote">Note <span class="char-count" id="editCharCount">0/500</span></label>
+          <textarea id="editNote" class="form-control" maxlength="500" rows="4" placeholder="Add a note..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="editAlarmToggle">
+            <span class="icon-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              <span>Set Alarm</span>
+            </span>
+          </label>
+          <input type="datetime-local" id="editAlarmPicker" class="form-control" style="display: none;">
+        </div>
+
+        <div class="form-group">
+          <button class="btn-secondary" id="editOpenLink" style="width: 100%; margin-bottom: 8px;">
+            🡕 OPEN LINK
+          </button>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary btn-danger" id="editDelete" aria-label="Delete item">
+          <span class="icon-label">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>DELETE</span>
+          </span>
+        </button>
+        <button class="btn-primary" id="editSave">SAVE</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="settingsModal">
+    <div class="modal-content" style="max-width: 480px;">
+      <div class="modal-header">
+        <h2>Settings</h2>
+        <button class="modal-close" id="settingsClose">&times;</button>
+      </div>
+      
+      <div class="settings-tabs">
+        <button class="settings-tab-btn active" data-tab="folders">Folders</button>
+        <button class="settings-tab-btn" data-tab="items">Items</button>
+        <button class="settings-tab-btn" data-tab="theme">Theme</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="settings-tab-content active" id="foldersTab">
+          <div class="form-group">
+            <label>Create New Folder</label>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="newFolderInput" class="form-control" placeholder="Folder name..." style="flex: 1;">
+              <button class="btn-primary" id="createFolderBtn">Create</button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Your Folders</label>
+            <div id="foldersList" style="max-height: 200px; overflow-y: auto;"></div>
+          </div>
+        </div>
+
+        <div class="settings-tab-content" id="itemsTab">
+          <div class="form-group">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <label style="margin: 0;">All Items</label>
+              <button class="btn-secondary" id="deleteAllBtn" style="width: auto; background: #F8D7DA; color: #DC3545; border-color: #F8D7DA; padding: 6px 12px;">
+                Delete All
+              </button>
+            </div>
+            <div id="allItemsList" style="max-height: 300px; overflow-y: auto;"></div>
+          </div>
+        </div>
+
+        <div class="settings-tab-content" id="themeTab">
+          <div class="form-group">
+            <label>Appearance</label>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <label class="theme-option">
+                <input type="radio" name="theme" value="light" id="themeLight">
+                <span>Light Theme</span>
+              </label>
+              <label class="theme-option">
+                <input type="radio" name="theme" value="dark" id="themeDark">
+                <span>Dark Theme</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
