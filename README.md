@@ -1,16 +1,7 @@
-<<<<<<< HEAD
-=======
-# Boxy
->>>>>>> 76a0a52b54b2756472204ef5a4571b020f8fbde6
 # 📦 Boxy - Web Content Organizer
 
 **Boxy** é uma extensão de navegador leve e minimalista que ajuda você a salvar e organizar conteúdos importantes da web (textos, imagens, vídeos e links) em um só lugar, permitindo que você os encontre facilmente mais tarde sem precisar manter dezenas de abas abertas.
 
-<<<<<<< HEAD
-![Boxy Preview](link-para-uma-imagem-ou-gif-aqui.gif) *(Dica: Grave um GIF curto usando a extensão e coloque o link aqui!)*
-
-=======
->>>>>>> 76a0a52b54b2756472204ef5a4571b020f8fbde6
 ## 🎯 O que ela faz
 
 - **Captura Inteligente:** Salva links, seleciona textos, imagens ou vídeos diretamente da página atual.
@@ -62,8 +53,4 @@ Se você for um desenvolvedor e quiser testar a versão de código-fonte aberto:
 
 ## 📝 Licença
 
-<<<<<<< HEAD
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-=======
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
->>>>>>> 76a0a52b54b2756472204ef5a4571b020f8fbde6
