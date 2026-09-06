@@ -5,6 +5,7 @@
   "description": "Boxy helps you save and organize web content in one place. Save links, text, images, and videos with ease.",
   "permissions": [
     "storage",
+    "unlimitedStorage",
     "notifications",
     "alarms",
     "tabs",
@@ -24,6 +25,7 @@
     }
   },
   "background": {
+    "service_worker": "background.js",
     "scripts": ["background.js"]
   },
   "browser_specific_settings": {

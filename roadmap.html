@@ -1,0 +1,332 @@
+<style>
+  :root {
+    --bg: #F4F5F8;
+    --surface: #FFFFFF;
+    --surface-2: #FAFAFC;
+    --ink: #1A1D26;
+    --muted: #5E6473;
+    --faint: #8A909E;
+    --border: #E3E6EC;
+    --accent: #DE862A;
+    --accent-soft: #FBEEDC;
+    --done: #2E9E78;
+    --done-soft: #E1F2EA;
+    --doing: #DE862A;
+    --doing-soft: #FBEEDC;
+    --plan: #4C74E0;
+    --plan-soft: #E5ECFC;
+    --vision: #8A6BE0;
+    --vision-soft: #ECE6FB;
+    --rail: #E3E6EC;
+    --shadow: 0 1px 2px rgba(20,25,40,.04), 0 4px 16px rgba(20,25,40,.05);
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #121419;
+      --surface: #1B1E26;
+      --surface-2: #21252F;
+      --ink: #E9EBF0;
+      --muted: #9BA1B0;
+      --faint: #6C7280;
+      --border: #2B3038;
+      --accent: #EE9B3D;
+      --accent-soft: #362818;
+      --done: #46B98E;
+      --done-soft: #16281F;
+      --doing: #EE9B3D;
+      --doing-soft: #362818;
+      --plan: #6E92F0;
+      --plan-soft: #182136;
+      --vision: #A385F0;
+      --vision-soft: #221B36;
+      --rail: #2B3038;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 18px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #F4F5F8; --surface: #FFFFFF; --surface-2: #FAFAFC; --ink: #1A1D26;
+    --muted: #5E6473; --faint: #8A909E; --border: #E3E6EC; --accent: #DE862A;
+    --accent-soft: #FBEEDC; --done: #2E9E78; --done-soft: #E1F2EA; --doing: #DE862A;
+    --doing-soft: #FBEEDC; --plan: #4C74E0; --plan-soft: #E5ECFC; --vision: #8A6BE0;
+    --vision-soft: #ECE6FB; --rail: #E3E6EC; --shadow: 0 1px 2px rgba(20,25,40,.04), 0 4px 16px rgba(20,25,40,.05);
+  }
+  :root[data-theme="dark"] {
+    --bg: #121419; --surface: #1B1E26; --surface-2: #21252F; --ink: #E9EBF0;
+    --muted: #9BA1B0; --faint: #6C7280; --border: #2B3038; --accent: #EE9B3D;
+    --accent-soft: #362818; --done: #46B98E; --done-soft: #16281F; --doing: #EE9B3D;
+    --doing-soft: #362818; --plan: #6E92F0; --plan-soft: #182136; --vision: #A385F0;
+    --vision-soft: #221B36; --rail: #2B3038; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 18px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink);
+    font-family: var(--sans); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 24px 80px; }
+
+  /* ---- Header ---- */
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--accent); margin: 0 0 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .eyebrow::before { content: "📦"; font-size: 15px; }
+  h1 {
+    font-size: clamp(30px, 6vw, 46px); line-height: 1.05; letter-spacing: -.02em;
+    margin: 0 0 14px; font-weight: 750; text-wrap: balance;
+  }
+  h1 .accent { color: var(--accent); }
+  .lede { font-size: 17px; color: var(--muted); margin: 0; max-width: 60ch; }
+
+  /* ---- Snapshot tiles ---- */
+  .tiles {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+    margin: 36px 0 8px;
+  }
+  .tile {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 16px 14px; box-shadow: var(--shadow);
+  }
+  .tile .num { font-family: var(--mono); font-size: 26px; font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .tile .lbl { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .tile.done .num { color: var(--done); }
+  .tile.doing .num { color: var(--doing); }
+  .tile.plan .num { color: var(--plan); }
+  .tile.vision .num { color: var(--vision); }
+
+  /* ---- Legend ---- */
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px 16px; margin: 28px 0 10px;
+    font-family: var(--mono); font-size: 12px; color: var(--muted);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .dot.done { background: var(--done); } .dot.doing { background: var(--doing); }
+  .dot.plan { background: var(--plan); } .dot.vision { background: var(--vision); }
+
+  /* ---- Timeline ---- */
+  .timeline { position: relative; margin-top: 20px; padding-left: 34px; }
+  .timeline::before {
+    content: ""; position: absolute; left: 11px; top: 8px; bottom: 8px;
+    width: 2px; background: var(--rail);
+  }
+  .phase { position: relative; margin-bottom: 20px; }
+  .phase-marker {
+    position: absolute; left: -34px; top: 20px; width: 24px; height: 24px;
+    border-radius: 50%; background: var(--surface); border: 2px solid var(--rail);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--muted);
+    z-index: 1;
+  }
+  .phase.done .phase-marker { border-color: var(--done); color: var(--done); background: var(--done-soft); }
+  .phase.doing .phase-marker { border-color: var(--doing); color: var(--doing); background: var(--doing-soft); }
+  .phase.plan .phase-marker { border-color: var(--plan); color: var(--plan); background: var(--plan-soft); }
+  .phase.vision .phase-marker { border-color: var(--vision); color: var(--vision); background: var(--vision-soft); }
+
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 22px; box-shadow: var(--shadow); overflow: hidden;
+  }
+  .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+  .card-head h2 { font-size: 19px; letter-spacing: -.01em; margin: 0; font-weight: 700; }
+  .card-sub { color: var(--muted); font-size: 14px; margin: 2px 0 16px; }
+
+  .status {
+    font-family: var(--mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase;
+    padding: 4px 9px; border-radius: 999px; font-weight: 600; white-space: nowrap;
+  }
+  .status.done { color: var(--done); background: var(--done-soft); }
+  .status.doing { color: var(--doing); background: var(--doing-soft); }
+  .status.plan { color: var(--plan); background: var(--plan-soft); }
+  .status.vision { color: var(--vision); background: var(--vision-soft); }
+
+  ul.items { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+  ul.items li { display: flex; gap: 11px; align-items: flex-start; }
+  .check {
+    flex: 0 0 auto; width: 18px; height: 18px; border-radius: 6px; margin-top: 2px;
+    display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700;
+    border: 1.5px solid var(--border); color: var(--faint);
+  }
+  .check.ok { background: var(--done); border-color: var(--done); color: #fff; }
+  li.ck .item-t { color: var(--muted); }
+  li.ck .item-t strong { color: var(--ink); font-weight: 600; }
+  .item-t { font-size: 14.5px; }
+  .item-t strong { font-weight: 650; }
+  .item-t .how { display: block; color: var(--faint); font-size: 13px; margin-top: 1px; }
+  .tag {
+    font-family: var(--mono); font-size: 10.5px; font-weight: 600; color: var(--accent);
+    background: var(--accent-soft); border-radius: 6px; padding: 1px 6px; margin-left: 2px;
+    vertical-align: 1px; white-space: nowrap;
+  }
+  .tag.new { color: var(--plan); background: var(--plan-soft); }
+
+  .stack {
+    margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--border);
+    display: flex; flex-wrap: wrap; gap: 7px;
+  }
+  .chip {
+    font-family: var(--mono); font-size: 12px; color: var(--ink);
+    background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 5px 10px;
+  }
+  .decision {
+    margin-top: 16px; background: var(--accent-soft); border: 1px solid transparent;
+    border-radius: 10px; padding: 12px 14px; font-size: 13.5px; color: var(--ink);
+  }
+  .decision b { color: var(--accent); }
+
+  footer {
+    margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);
+    color: var(--faint); font-size: 13px; font-family: var(--mono);
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    .wrap { padding: 32px 16px 60px; }
+    .card { padding: 18px 16px; }
+  }
+</style>
+
+<div class="wrap">
+  <p class="eyebrow">Boxy · Plano de Evolução</p>
+  <h1>De extensão a <span class="accent">segundo cérebro</span>.</h1>
+  <p class="lede">Roadmap completo do Boxy: o que já foi corrigido, o que precisa melhorar, as funcionalidades escolhidas e a visão de longo prazo — conta, sincronização celular↔computador e esboço à caneta.</p>
+
+  <div class="tiles">
+    <div class="tile done"><div class="num">8</div><div class="lbl">bugs corrigidos</div></div>
+    <div class="tile done"><div class="num">5/6</div><div class="lbl">fases concluídas</div></div>
+    <div class="tile done"><div class="num">7</div><div class="lbl">funcionalidades entregues</div></div>
+    <div class="tile vision"><div class="num">∞</div><div class="lbl">100% offline hoje</div></div>
+  </div>
+
+  <div class="legend">
+    <span><i class="dot done"></i> Concluído</span>
+    <span><i class="dot doing"></i> Em andamento</span>
+    <span><i class="dot plan"></i> Planejado</span>
+    <span><i class="dot vision"></i> Visão de futuro</span>
+  </div>
+
+  <div class="timeline">
+
+    <!-- FASE 0 -->
+    <div class="phase done">
+      <div class="phase-marker">0</div>
+      <div class="card">
+        <div class="card-head"><h2>Correções de base</h2><span class="status done">Concluído</span></div>
+        <p class="card-sub">Bugs que impediam a extensão de funcionar de verdade — inclusive no Chrome, onde quase nada rodava.</p>
+        <ul class="items">
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>API <code>chrome</code>/<code>browser</code> unificada</strong> — shim cross-browser; salvar, editar, deletar e alarmes voltaram a funcionar no Chrome.</span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Manifest cross-browser</strong> — <code>service_worker</code> (Chrome) + <code>scripts</code> (Firefox).</span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Crash no Firefox</strong> — <code>onButtonClicked</code> inexistente derrubava o background inteiro. Protegido.</span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Notificação de lembrete no Firefox</strong> — campos rejeitados pelo navegador faziam o lembrete nunca aparecer.</span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Erro ao disparar alarme</strong> com o popup fechado — silenciado.</span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Espaçamento do ícone "Set Alarm"</strong> — folga dobrada entre ícone e texto, corrigida nos 3 lugares.</span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Aba "All" agora mostra tudo</strong> — antes escondia itens que estavam em outras pastas.</span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Busca global</strong> — antes só procurava dentro da pasta atual; agora encontra em qualquer lugar.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 1 -->
+    <div class="phase done">
+      <div class="phase-marker">1</div>
+      <div class="card">
+        <div class="card-head"><h2>Base sólida</h2><span class="status done">Concluído</span></div>
+        <p class="card-sub">Fundação técnica antes de crescer. Resolvido o ponto mais crítico: previews em base64 estouravam o limite de armazenamento e o Boxy parava de salvar em silêncio.</p>
+        <ul class="items">
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Comportamento de pastas e busca</strong> — concluído na Fase 0.</span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Armazenamento migrado para IndexedDB</strong><span class="how">Novo <code>db.js</code>: blobs vão pro IndexedDB (sem teto), metadados ficam no storage.local. Migração automática dos dados existentes. Testado no Chrome.</span></span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Exportar / Importar (JSON)</strong><span class="how">Backup completo com previews inline; importação mescla sem duplicar. Testado.</span></span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Desfazer ao excluir</strong><span class="how">Toast com "Undo" (janela de 6s) no lugar do <code>confirm()</code>: some na hora, só finaliza depois. Testado (restaura e finaliza).</span></span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Erros de armazenamento tratados</strong> + interface unificada em inglês.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 2 -->
+    <div class="phase done">
+      <div class="phase-marker">2</div>
+      <div class="card">
+        <div class="card-head"><h2>Captura inteligente</h2><span class="status done">Concluído</span></div>
+        <p class="card-sub">Salvar deixou de ser só "print + link". Os 4 itens entregues e testados no Chrome.</p>
+        <ul class="items">
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Salvar o trecho selecionado</strong> <span class="tag new">nova ideia</span><span class="how">Selecionou texto (>10 chars) → aparece um "📦 Save highlight" flutuante; clicou, guarda o trecho + link.</span></span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Menu de contexto que salva de verdade</strong><span class="how">O "Save to Boxy" salva direto conforme o clique: seleção→texto, imagem→imagem, link/página→artigo, com notificação.</span></span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Arquivo permanente</strong> <span class="tag">#4</span><span class="how">Guarda o texto limpo do artigo (extração própria, sem libs), com "View saved text". IndexedDB v2.</span></span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Sketch — desenhar/anotar</strong> <span class="tag">#11</span><span class="how">Canvas rolável em branco ou sobre um print; caneta, cores, espessura, borracha (só apaga traços), desfazer. Traços vetoriais + PNG. Semente da caneta da Fase 6. IndexedDB v3.</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 3 -->
+    <div class="phase done">
+      <div class="phase-marker">3</div>
+      <div class="card">
+        <div class="card-head"><h2>Vigiar página</h2><span class="status done">Concluído</span></div>
+        <p class="card-sub">De guardar para monitorar. Totalmente local — usa o background que já existe.</p>
+        <ul class="items">
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Avise quando isto mudar</strong> <span class="tag">#5</span><span class="how">Toggle "Watch for changes" no item. Um alarme a cada 3h refaz o <code>fetch</code>, limpa o HTML, gera um hash e compara — notifica na mudança e mostra "🔔 changed" no card. Testado no Chrome.</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 4 -->
+    <div class="phase done">
+      <div class="phase-marker">4</div>
+      <div class="card">
+        <div class="card-head"><h2>Não deixar esquecer</h2><span class="status done">Concluído</span></div>
+        <p class="card-sub">O problema de todo "ler depois": 90% nunca é revisto. O Boxy ataca isso de frente.</p>
+        <ul class="items">
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>A pilha de 5 minutos</strong> <span class="tag">#3</span><span class="how">Banner "Revisit" no topo mostra o item mais atrasado com Open / Later / Done (repetição espaçada 1→3→7→30→90 dias) + lembrete diário. Testado no Chrome.</span></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- FASE 5 -->
+    <div class="phase done">
+      <div class="phase-marker">5</div>
+      <div class="card">
+        <div class="card-head"><h2>Inteligência local</h2><span class="status done">Concluído · v1</span></div>
+        <p class="card-sub">v1 por relevância (TF-IDF), 100% offline e sem build. Embeddings semânticos de verdade ficam para a Fase 6 (que já traz infra mais pesada).</p>
+        <ul class="items">
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Ressurgimento por contexto</strong> <span class="tag">#2</span><span class="how">Ao abrir o popup, lê a página atual e mostra "Related to this page" com os itens salvos mais relevantes. Testado.</span></span></li>
+          <li class="ck"><span class="check ok">✓</span><span class="item-t"><strong>Pergunte pro seu Boxy</strong> <span class="tag">#1</span><span class="how">A busca passa a ranquear por relevância (multi-termo, sem acento/stopwords) em vez de só filtrar por texto. Testado.</span></span></li>
+        </ul>
+        <div class="decision">💡 <b>v1 vs. futuro:</b> ranqueia por <i>termos</i>, não por <i>significado</i> (ex.: "sourdough" ≠ "fermentação"). Embeddings de verdade (via <code>transformers.js</code> no navegador ou API) entram na Fase 6, alimentados pelo texto do <b>Arquivo permanente (#4)</b>.</div>
+      </div>
+    </div>
+
+    <!-- FASE 6 -->
+    <div class="phase vision">
+      <div class="phase-marker">6</div>
+      <div class="card">
+        <div class="card-head"><h2>Boxy como produto</h2><span class="status vision">Visão de futuro</span></div>
+        <p class="card-sub">A grande virada: de extensão local para o "Evernote com caneta" que você imaginou. Muda a arquitetura — vale fazer por último, sobre uma base madura.</p>
+        <ul class="items">
+          <li><span class="check">○</span><span class="item-t"><strong>Conta + banco de dados</strong><span class="how">Auth e uma API; extensão e app viram clientes que leem/escrevem no mesmo lugar.</span></span></li>
+          <li><span class="check">○</span><span class="item-t"><strong>Sincronização celular ↔ computador</strong><span class="how">Salvar no telefone e acessar no PC, e vice-versa, com estratégia de conflito.</span></span></li>
+          <li><span class="check">○</span><span class="item-t"><strong>Esboço à caneta</strong><span class="how">Canvas com Pointer Events (dedo, mouse, stylus) e sensibilidade à pressão. Traços vetoriais — leves e perfeitos para sincronizar.</span></span></li>
+          <li><span class="check">○</span><span class="item-t"><strong>Mobile via PWA primeiro</strong><span class="how">App web instalável reaproveita o front, funciona offline e desenha no canvas. Nativo (React Native) só se a caneta virar o diferencial central.</span></span></li>
+        </ul>
+        <div class="stack">
+          <span class="chip">Next.js · Vercel</span>
+          <span class="chip">Postgres (Neon)</span>
+          <span class="chip">Auth: Clerk</span>
+          <span class="chip">Vercel Blob</span>
+          <span class="chip">PWA</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <span>Boxy · roadmap v1</span>
+    <span>Atualizado 08/07/2026</span>
+  </footer>
+</div>

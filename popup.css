@@ -1,3 +1,25 @@
+/* Inter local (subsets latin + latin-ext, variavel 300-600).
+   Empacotada de proposito: o popup abre offline e nao deve pingar a rede. */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('fonts/inter-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC,
+    U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300 600;
+  font-display: swap;
+  src: url('fonts/inter-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304,
+    U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0,
+    U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -24,7 +46,16 @@
   --border-color: #E6D8CF;
   --shadow: 0 2px 8px rgba(58, 36, 28, 0.08);
   --shadow-hover: 0 4px 14px rgba(168, 124, 90, 0.18);
-  --transition: all 0.2s ease;
+  /* 'all' animava tambem propriedades de layout (reflow + efeitos nao intencionais).
+     'ease' comeca lento, errado para entrada de UI: a curva certa e de saida. */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --transition:
+    background-color 0.18s var(--ease-out),
+    color 0.18s var(--ease-out),
+    border-color 0.18s var(--ease-out),
+    box-shadow 0.18s var(--ease-out),
+    transform 0.18s var(--ease-out),
+    opacity 0.18s var(--ease-out);
 
   /* Buttons */
   --btn-save-bg: #3A241C;
@@ -39,6 +70,15 @@
   --input-bg: #FFF8F4;
   --input-text: var(--text-primary);
   --placeholder: rgba(58, 36, 28, 0.5);
+
+  /* Contraste: os tokens acima sao calibrados para superficie e nao passam
+     como texto. Estes sao os pares legiveis, medidos contra --bg-primary
+     e --bg-secondary (o pior caso dos dois). */
+  --border-input: #AB7C5E;      /* limite de controle, 3.20:1 (WCAG 1.4.11 pede 3:1) */
+  --accent-text: #866246;       /* accent como texto, 4.80:1 */
+  --danger-text: #CB2333;       /* danger como texto, 4.83:1 */
+  --danger-soft-bg: #F8D7DA;
+  --danger-soft-text: #B7202E;  /* 4.82:1 sobre --danger-soft-bg */
 }
 
 
@@ -62,6 +102,13 @@
   /* FAB Dark Mode Overrides */
   --fab-bg: #E0E0E0; /* Light in dark theme */
   --fab-text: #0A0A0A; /* Dark text */
+
+  /* Pares legiveis no escuro, medidos contra #0A0A0A e #161616 */
+  --border-input: #686868;      /* 3.25:1 */
+  --accent-text: #A87C5A;       /* 4.91:1 - o accent base ja passa no escuro */
+  --danger-text: #E1525F;       /* 4.80:1 */
+  --danger-soft-bg: #2A1417;
+  --danger-soft-text: #F1707C;  /* 6.07:1 sobre --danger-soft-bg */
 }
 
 /* Correção do Header */
@@ -89,7 +136,11 @@
 
 body {
   width: 450px;
-  height: 650px;
+  /* O Chrome limita popups a 800x600. 650px fazia o Chrome cortar os
+     ultimos ~60px, e overflow:hidden impedia rolar ate eles. */
+  height: 600px;
+  display: flex;
+  flex-direction: column;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   background: var(--bg-primary);
   color: var(--text-primary);
@@ -131,8 +182,17 @@ input, textarea, select, button {
 input, textarea, select {
   background: var(--input-bg);
   color: var(--input-text);
-  border: 1px solid var(--border-color);
-  outline: none;
+  border: 1px solid var(--border-input);
+}
+
+/* Um anel de foco para tudo que e alcancavel por teclado.
+   Antes, 'outline: none' aqui em cima apagava o anel de todo input e so
+   .search-input/.form-control ganhavam substituto — os 6 checkbox/radio
+   (alarm, archive, editAlarm, watch, themeLight, themeDark) ficavam sem
+   indicador nenhum. Regra unica cobre todos. */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
 }
 
 /* --- FIX: Datetime Picker Visibility --- */
@@ -174,6 +234,7 @@ input::placeholder, textarea::placeholder {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   height: 50px;
+  flex-shrink: 0;
 }
 
 .header-right {
@@ -216,9 +277,14 @@ input::placeholder, textarea::placeholder {
   transition: var(--transition);
 }
 
+/* Borda realca em qualquer foco — inclusive clique de mouse, que e o caso
+   que <select> perdia com :focus-visible sozinho. O anel fica so no teclado. */
 .search-input:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(168, 124, 90, 0.15);
+}
+
+.search-input:focus-visible {
+  outline-offset: 1px;
 }
 
 /* Tabs */
@@ -229,6 +295,7 @@ input::placeholder, textarea::placeholder {
   background: var(--bg-secondary);
   border-bottom: 1px solid var(--border-color);
   overflow-x: auto;
+  flex-shrink: 0;
 }
 
 .tab-btn {
@@ -257,9 +324,139 @@ input::placeholder, textarea::placeholder {
 /* Main Container */
 .main-container {
   display: flex;
-  height: calc(650px - 50px - 43px);
+  flex-direction: column; /* banner de revisão acima da lista */
+  /* Ocupa o que sobra. Antes era calc() na mao, que dessincronizou quando
+     a altura das tabs mudou de 43px para 53px. */
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }
+
+/* Local Intelligence v1 — caixa "Related to this page" */
+.related-box {
+  margin: 8px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+}
+
+.related-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.related-body {
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.related-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.related-btn {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.related-btn-primary {
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  color: #fff;
+}
+
+.related-btn-primary:hover {
+  background: var(--accent-primary-hover);
+  border-color: var(--accent-primary-hover);
+}
+
+.related-name-input {
+  flex: 1 1 auto;
+  min-width: 120px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-primary, transparent);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+/* Banner de revisão (#3) */
+/* Revisão espaçada (#3): chip fininho e dispensável, no espírito minimalista */
+.review-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin: 6px 8px 0;
+  max-width: calc(100% - 16px);
+}
+
+.review-chip-open {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  background: none;
+  border: none;
+  padding: 4px 2px;
+  min-height: 24px; /* WCAG 2.5.8: alvo minimo de 24x24 */
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.review-dot {
+  flex-shrink: 0;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-primary);
+}
+
+.review-chip-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-chip-open:hover .review-chip-text {
+  color: var(--text-primary);
+  text-decoration: underline;
+}
+
+.review-chip-close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 16px;
+  line-height: 1;
+  padding: 0 4px;
+  /* WCAG 2.5.8. Media 19x16 e fica colado no botao de abrir: errar o alvo
+     abria o item em vez de dispensar. */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  cursor: pointer;
+  opacity: .6;
+}
+
+.review-chip-close:hover { opacity: 1; }
 
 /* Items List */
 .items-list {
@@ -280,8 +477,6 @@ input::placeholder, textarea::placeholder {
   border-radius: 8px;
   min-height: 80px;
   transition: var(--transition);
-  opacity: 0;
-  animation: fadeIn 0.3s ease forwards;
   position: relative;
 }
 
@@ -342,8 +537,15 @@ input::placeholder, textarea::placeholder {
 }
 
 .alarm-badge.expired {
-  background: #F8D7DA;
-  color: #721C24;
+  background: var(--danger-soft-bg);
+  color: var(--danger-soft-text);
+}
+
+/* Page-Watch (#5): indicador de página alterada no card */
+.watch-badge {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--accent-text);
 }
 
 .item-actions {
@@ -364,8 +566,8 @@ input::placeholder, textarea::placeholder {
 }
 
 .btn-delete:hover {
-  background: #F8D7DA;
-  color: var(--accent-danger);
+  background: var(--danger-soft-bg);
+  color: var(--danger-soft-text);
 }
 
 /* Empty State */
@@ -413,9 +615,11 @@ input::placeholder, textarea::placeholder {
   z-index: 100;
 }
 
-.fab:hover {
-  transform: scale(1.06);
-  box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+@media (hover: hover) and (pointer: fine) {
+  .fab:hover {
+    transform: scale(1.06);
+    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.35);
+  }
 }
 
 .fab:active {
@@ -437,7 +641,7 @@ input::placeholder, textarea::placeholder {
   background: rgba(0, 0, 0, 0.45);
   z-index: 1000;
   backdrop-filter: blur(4px);
-  animation: fadeIn 0.2s ease;
+  animation: fadeIn 0.2s var(--ease-out);
 }
 
 .modal.active {
@@ -455,7 +659,7 @@ input::placeholder, textarea::placeholder {
   display: flex;
   flex-direction: column;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  animation: slideUp 0.3s ease;
+  animation: slideUp 0.3s var(--ease-out);
 }
 
 @keyframes slideUp {
@@ -534,6 +738,20 @@ input::placeholder, textarea::placeholder {
   font-weight: 400;
 }
 
+.field-hint {
+  margin: 6px 0 0 26px;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-secondary);
+}
+
+.watch-status {
+  margin: 6px 0 0 26px;
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
 .form-control {
   width: 100%;
   padding: 10px 12px;
@@ -544,7 +762,10 @@ input::placeholder, textarea::placeholder {
 
 .form-control:focus {
   border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px rgba(168, 124, 90, 0.18);
+}
+
+.form-control:focus-visible {
+  outline-offset: 1px;
 }
 
 textarea.form-control {
@@ -597,14 +818,43 @@ textarea.form-control {
   color: var(--btn-save-text);
 }
 
-.btn-primary:hover {
-  background: var(--btn-save-bg-hover);
-  transform: translateY(-1px);
-  box-shadow: var(--shadow);
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover {
+    background: var(--btn-save-bg-hover);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
 }
 
 .btn-primary:active {
-  transform: translateY(0px);
+  transform: scale(0.97);
+}
+
+/* Feedback de press. Nove controles tinham :hover e nenhuma resposta ao clique.
+   0.97 e sutil o bastante para os que sao clicados dezenas de vezes por dia. */
+.btn-secondary:active,
+.btn-danger:active,
+.settings-btn:active,
+.tab-btn:active,
+.review-chip-open:active,
+.review-chip-close:active,
+.sketch-tool:active,
+.sketch-size:active {
+  transform: scale(0.97);
+}
+
+/* O swatch ja usa scale(1.1) no hover; 0.97 puro faria ele encolher no clique. */
+.sketch-swatch:active {
+  transform: scale(1.05);
+}
+
+/* As quatro que nao tinham transition precisam dela para o press nao ser um corte. */
+.btn-secondary,
+.btn-danger,
+.review-chip-open,
+.review-chip-close,
+.sketch-tool {
+  transition: var(--transition);
 }
 
 .btn-secondary {
@@ -620,24 +870,89 @@ textarea.form-control {
 }
 
 /* Toast */
+/* Visualizador de imagem/sketch (#7): abre a imagem em tamanho grande ao clicar no item */
+.image-viewer {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.9);
+  z-index: 1500;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  box-sizing: border-box;
+  animation: fadeIn 0.2s var(--ease-out);
+}
+
+.image-viewer.show {
+  display: flex;
+}
+
+.image-viewer-img {
+  max-width: 100%;
+  max-height: calc(100% - 56px);
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.image-viewer-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.image-viewer-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 640px;
+  margin-top: 12px;
+}
+
+.image-viewer-name {
+  color: #fff;
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .toast {
   position: fixed;
-  bottom: -100px;
+  bottom: 24px;
   left: 50%;
-  transform: translateX(-50%);
+  /* 100% = a propria altura do toast, entao ele descansa fora da tela sem
+     depender de um -100px chutado. */
+  transform: translate(-50%, calc(100% + 24px));
+  opacity: 0;
   padding: 12px 24px;
   background: var(--text-primary);
   color: var(--bg-primary);
   border-radius: 8px;
   font-size: 14px;
   box-shadow: var(--shadow-hover);
-  transition: bottom 0.3s ease;
+  /* Antes: 'transition: bottom' — layout + paint + composite a cada frame. */
+  transition: transform 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
   z-index: 2000;
   max-width: 90%;
 }
 
 .toast.show {
-  bottom: 24px;
+  transform: translate(-50%, 0);
+  opacity: 1;
 }
 
 .toast.error {
@@ -685,7 +1000,7 @@ textarea.form-control {
 
 .settings-tab-btn.active {
   background: var(--bg-primary);
-  color: var(--accent-primary);
+  color: var(--accent-text);
   border-bottom: 2px solid var(--accent-primary);
 }
 
@@ -825,9 +1140,11 @@ textarea.form-control {
   transition: var(--transition);
 }
 
-.folder-card:hover {
-  box-shadow: var(--shadow-hover);
-  transform: translateY(-1px);
+@media (hover: hover) and (pointer: fine) {
+  .folder-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-1px);
+  }
 }
 
 .folder-card-header {
@@ -855,9 +1172,9 @@ textarea.form-control {
 
 /* icons svg */
 .btn-danger {
-  background: #F8D7DA;
-  color: var(--accent-danger);
-  border: 1px solid #F8D7DA;
+  background: var(--danger-soft-bg);
+  color: var(--danger-soft-text);
+  border: 1px solid var(--danger-soft-bg);
   width: 100%;
 }
 
@@ -914,3 +1231,160 @@ textarea.form-control {
 
 .settings-btn { color: var(--text-secondary); }
 .settings-btn:hover { color: var(--text-primary); }
+/* --- Sketch (#11) --- */
+
+/* FAB secundário "New sketch", logo acima do FAB principal */
+.fab-secondary {
+  width: 40px;
+  height: 40px;
+  bottom: 92px;
+  right: 32px;
+  font-size: 18px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .fab-secondary:hover {
+    background: var(--border-color);
+    transform: scale(1.06);
+  }
+}
+
+.sketch-modal-content {
+  max-width: 430px;
+  width: 96%;
+}
+
+.sketch-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.sketch-tool-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sketch-tool,
+.sketch-size {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  background: var(--bg-primary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: var(--transition);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sketch-tool:hover,
+.sketch-size:hover {
+  background: var(--border-color);
+  color: var(--text-primary);
+}
+
+.sketch-tool.active,
+.sketch-size.active {
+  color: var(--accent-text);
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 1px;
+}
+
+.sketch-size-dot {
+  display: block;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.sketch-swatch {
+  width: 24px;  /* WCAG 2.5.8: era 22px */
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sketch-swatch:hover {
+    transform: scale(1.1);
+  }
+}
+
+.sketch-swatch.active {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Área rolável do canvas (o canvas pode ser maior que o popup) */
+#sketchScroll {
+  max-height: 70vh;
+  overflow: auto;
+  flex: 1;
+  min-height: 0;
+  padding: 12px;
+  background: var(--bg-primary);
+}
+
+#sketchCanvas {
+  display: block;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  cursor: crosshair;
+  touch-action: none; /* Pointer Events: impede scroll durante o traço */
+}
+
+/* Leitor do texto arquivado (Permanent Archive) */
+.archive-reader {
+  margin-top: 8px;
+  padding: 12px;
+  max-height: 220px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+/* Respeita a preferencia do sistema por menos movimento.
+   Cobre as transicoes de --transition e os @keyframes fadeIn/slideUp. */
+@media (prefers-reduced-motion: reduce) {
+  /* Nao zera tudo. Opacidade e cor ajudam a entender o que mudou e ficam;
+     o que sai e o deslocamento, que e o que causa desconforto. */
+  *,
+  *::before,
+  *::after {
+    transition-property: background-color, color, border-color, box-shadow, opacity !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* slideUp desloca o painel. O overlay ainda faz fade, entao o modal
+     continua tendo uma entrada perceptivel, so que sem movimento. */
+  .modal-content {
+    animation: none !important;
+  }
+
+  /* O toast e posicionado por transform. Sem transicao dele, precisa ja
+     nascer no lugar final e so aparecer pela opacidade. */
+  .toast {
+    transform: translate(-50%, 0) !important;
+  }
+}

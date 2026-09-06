@@ -4,9 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Boxy</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
@@ -37,6 +34,18 @@
   </nav>
 
   <div class="main-container">
+    <div class="related-box" id="relatedBox" style="display:none;">
+      <div class="related-title" id="relatedTitle"></div>
+      <div class="related-body" id="relatedBody"></div>
+      <div class="related-actions" id="relatedActions"></div>
+    </div>
+    <div class="review-chip" id="reviewBanner" style="display:none;">
+      <button class="review-chip-open" id="reviewOpen" title="Open to revisit">
+        <span class="review-dot"></span>
+        <span class="review-chip-text" id="reviewChipText"></span>
+      </button>
+      <button class="review-chip-close" id="reviewDismiss" title="Dismiss" aria-label="Dismiss">&times;</button>
+    </div>
     <main class="items-list" id="itemsList">
       <div class="empty-state" id="emptyState">
         <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="color: var(--text-secondary); opacity: 0.5; margin-bottom: 16px;">
@@ -48,6 +57,10 @@
       </div>
     </main>
   </div>
+
+  <button class="fab fab-secondary" id="newSketchBtn" title="New sketch" aria-label="New sketch">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+  </button>
 
   <button class="fab" id="fabBtn" title="Save from current tab">
     <span class="fab-icon">+</span>
@@ -75,6 +88,11 @@
           <select id="itemFolder" class="form-control">
             <option value="All Items">All Items</option>
           </select>
+          <div class="new-folder-inline" id="itemFolderNew" style="display: none; gap: 6px; margin-top: 6px;">
+            <input type="text" class="form-control" placeholder="New folder name..." style="flex: 1;" aria-label="New folder name">
+            <button type="button" class="btn-primary nf-create">Create</button>
+            <button type="button" class="btn-secondary nf-cancel">Cancel</button>
+          </div>
         </div>
 
         <div class="form-group">
@@ -91,16 +109,27 @@
           <label class="checkbox-label">
             <input type="checkbox" id="alarmToggle">
             <span class="icon-label">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
               <span>Set Alarm</span>
             </span>
           </label>
           <input type="datetime-local" id="alarmPicker" class="form-control" style="display: none;">
         </div>
+
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="archiveToggle">
+            <span class="icon-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              <span>Keep a permanent copy</span>
+            </span>
+          </label>
+          <p class="field-hint">Saves the full text of this page inside Boxy so you can still read it even if the original link dies.</p>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn-secondary" id="modalCancel">Cancel</button>
-        <button class="btn-primary" id="modalSave">SAVE</button>
+        <button class="btn-primary" id="modalSave">Save</button>
       </div>
     </div>
   </div>
@@ -121,6 +150,11 @@
           <select id="editFolder" class="form-control">
             <option value="All Items">All Items</option>
           </select>
+          <div class="new-folder-inline" id="editFolderNew" style="display: none; gap: 6px; margin-top: 6px;">
+            <input type="text" class="form-control" placeholder="New folder name..." style="flex: 1;" aria-label="New folder name">
+            <button type="button" class="btn-primary nf-create">Create</button>
+            <button type="button" class="btn-secondary nf-cancel">Cancel</button>
+          </div>
         </div>
 
         <div class="form-group">
@@ -132,7 +166,7 @@
           <label class="checkbox-label">
             <input type="checkbox" id="editAlarmToggle">
             <span class="icon-label">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
               <span>Set Alarm</span>
             </span>
           </label>
@@ -140,19 +174,41 @@
         </div>
 
         <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="watchToggle">
+            <span class="icon-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <span>Watch for changes</span>
+            </span>
+          </label>
+          <p class="field-hint">Boxy revisits this page in the background and notifies you when its content changes — a price drop, a new chapter, an updated notice.</p>
+          <p class="watch-status" id="watchStatus" style="display: none;"></p>
+        </div>
+
+        <div class="form-group">
           <button class="btn-secondary" id="editOpenLink" style="width: 100%; margin-bottom: 8px;">
-            🡕 OPEN LINK
+            <span class="icon-label">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+              <span>Open link</span>
+            </span>
           </button>
+          <button class="btn-secondary" id="sketchItemBtn" style="width: 100%; margin-bottom: 8px;">
+            Sketch
+          </button>
+          <button class="btn-secondary" id="viewArchiveBtn" style="width: 100%; margin-bottom: 8px; display: none;">
+            Read saved copy
+          </button>
+          <div id="archiveReader" class="archive-reader" style="display: none;"></div>
         </div>
       </div>
       <div class="modal-footer">
         <button class="btn-secondary btn-danger" id="editDelete" aria-label="Delete item">
           <span class="icon-label">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-            <span>DELETE</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            <span>Delete</span>
           </span>
         </button>
-        <button class="btn-primary" id="editSave">SAVE</button>
+        <button class="btn-primary" id="editSave">Save</button>
       </div>
     </div>
   </div>
@@ -189,11 +245,19 @@
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
               <label style="margin: 0;">All Items</label>
-              <button class="btn-secondary" id="deleteAllBtn" style="width: auto; background: #F8D7DA; color: #DC3545; border-color: #F8D7DA; padding: 6px 12px;">
+              <button class="btn-danger" id="deleteAllBtn" style="width: auto; padding: 6px 12px;">
                 Delete All
               </button>
             </div>
             <div id="allItemsList" style="max-height: 300px; overflow-y: auto;"></div>
+          </div>
+          <div class="form-group">
+            <label>Backup</label>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn-primary" id="exportBtn" style="flex: 1;">Export backup</button>
+              <button class="btn-secondary" id="importBtn" style="flex: 1;">Import backup</button>
+              <input type="file" id="importFile" accept="application/json" style="display:none;">
+            </div>
           </div>
         </div>
 
@@ -216,8 +280,74 @@
     </div>
   </div>
 
+  <div class="modal" id="sketchModal">
+    <div class="modal-content sketch-modal-content">
+      <div class="modal-header">
+        <h2>Sketch</h2>
+        <button class="modal-close" id="sketchCancel" title="Cancel" aria-label="Cancel">&times;</button>
+      </div>
+
+      <div class="sketch-toolbar">
+        <div class="sketch-tool-group">
+          <button class="sketch-tool active" id="sketchToolPen" title="Pen" aria-label="Pen">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+          </button>
+          <button class="sketch-tool" id="sketchToolEraser" title="Eraser" aria-label="Eraser">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16a2 2 0 0 1 0-2.8L13.2 3a2 2 0 0 1 2.8 0L21 8a2 2 0 0 1 0 2.8L13 19"></path></svg>
+          </button>
+        </div>
+
+        <div class="sketch-tool-group" id="sketchColors">
+          <button class="sketch-swatch active" data-color="#111111" title="Black" style="background:#111111"></button>
+          <button class="sketch-swatch" data-color="#e0392b" title="Red" style="background:#e0392b"></button>
+          <button class="sketch-swatch" data-color="#2e9e78" title="Green" style="background:#2e9e78"></button>
+          <button class="sketch-swatch" data-color="#4c74e0" title="Blue" style="background:#4c74e0"></button>
+          <button class="sketch-swatch" data-color="#e0912b" title="Orange" style="background:#e0912b"></button>
+          <button class="sketch-swatch" data-color="#ffffff" title="White" style="background:#ffffff"></button>
+        </div>
+
+        <div class="sketch-tool-group" id="sketchSizes">
+          <button class="sketch-size" data-size="2" title="Small"><span class="sketch-size-dot" style="width:4px;height:4px"></span></button>
+          <button class="sketch-size active" data-size="5" title="Medium"><span class="sketch-size-dot" style="width:8px;height:8px"></span></button>
+          <button class="sketch-size" data-size="12" title="Large"><span class="sketch-size-dot" style="width:13px;height:13px"></span></button>
+        </div>
+
+        <div class="sketch-tool-group">
+          <button class="sketch-tool" id="sketchUndo" title="Undo" aria-label="Undo">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 14 4 9 9 4"></polyline><path d="M20 20v-7a4 4 0 0 0-4-4H4"></path></svg>
+          </button>
+          <button class="sketch-tool" id="sketchClear" title="Clear" aria-label="Clear">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+          <button class="sketch-tool" id="sketchLoadShot" title="Load screenshot" aria-label="Load screenshot">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="sketchScroll">
+        <canvas id="sketchCanvas" width="800" height="1100"></canvas>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-primary" id="sketchSave">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="image-viewer" id="imageViewer">
+    <button class="image-viewer-close" id="imageViewerClose" title="Close" aria-label="Close">&times;</button>
+    <img class="image-viewer-img" id="imageViewerImg" alt="">
+    <div class="image-viewer-bar">
+      <span class="image-viewer-name" id="imageViewerName"></span>
+      <button class="btn-secondary" id="imageViewerEdit">Edit details</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
+  <script src="search.js"></script>
+  <script src="db.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>
